@@ -1,1 +1,1 @@
-[[изображение](https://github.com/dddtgffddgg/C_Plus_Labs/assets/115697740/f8fc08b6-a9d1-4e18-a97c-e4153e54f72d)](https://media.tenor.com/HseHXaJz2OAAAAAM/sad-cry.gif)https://media.tenor.com/HseHXaJz2OAAAAAM/sad-cry.gif
+![изображение](https://github.com/dddtgffddgg/C_Plus_Labs/assets/115697740/fc885d6d-796e-4eaf-a946-4c4adfda3630)
