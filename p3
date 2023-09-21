@@ -1,0 +1,25 @@
+#define GP0
+#define GP1
+#define GP2 
+#define GP3 
+
+int pause = 3000;
+
+void setup() {
+  // put your setup code here, to run once:
+  pinMode(GP0, OUTPUT);
+  pinMode(GP1, OUTPUT);
+  pinMode(GP2, OUTPUT);
+  pinMode(GP3, INPUT);
+}
+
+void loop() {
+  // put your main code here, to run repeatedly:
+  digitalWrite(GP0, HIGH);
+  digitalWrite(GP1, HIGH);
+  digitalWrite(GP2, HIGH);
+
+  while (digitalWrite(GP3) == HIGH) {
+  delay(pause);
+}
+}
