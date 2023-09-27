@@ -1,1 +1,35 @@
+#include <Arduino.h>
+#define RED 0
+#define YELLOW 1
+#define GREEN 2
+#define BUTTON_PIN 3
+
+int currentColor = RED;
+
+void changeColor() {
+  digitalWrite(currentColor, LOW);  // Выключаем текущий цвет
+
+  if (currentColor == RED) {
+    currentColor = YELLOW;
+  } else if (currentColor == YELLOW) {
+    currentColor = GREEN;
+  } else {
+    currentColor = RED;
+  }
+
+  digitalWrite(currentColor, HIGH); // Включаем новый цвет
+}
+
+void setup() {
+  pinMode(RED, OUTPUT);
+  pinMode(YELLOW, OUTPUT);
+  pinMode(GREEN, OUTPUT);
+
+  pinMode(BUTTON_PIN, INPUT_PULLUP);
+  attachInterrupt(digitalPinToInterrupt(BUTTON_PIN), changeColor, FALLING);
+}
+
+void loop() {
+  // Основной код остается пустым, так как обработка кнопки происходит в прерывании
+}
 
