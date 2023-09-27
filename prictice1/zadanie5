@@ -1,0 +1,41 @@
+#include <Arduino.h>
+
+#define RED 1
+#define YELLOW 5
+#define GREEN 9
+
+int currentColor = RED;
+
+void changeColor() {
+  digitalWrite(currentColor, LOW);  // Выключаем текущий цвет
+
+  if (currentColor == RED) {
+    currentColor = YELLOW;
+  } else if (currentColor == YELLOW) {
+    currentColor = GREEN;
+  } else {
+    currentColor = RED;
+  }
+
+  digitalWrite(currentColor, HIGH); // Включаем новый цвет
+}
+
+void setup() {
+  pinMode(RED, OUTPUT);
+  pinMode(YELLOW, OUTPUT);
+  pinMode(GREEN, OUTPUT);
+
+  // Настройка таймера
+  noInterrupts();
+  // Устанавливаем интервал таймера в миллисекундах
+  arm_timer(TIMER_IRQ, 500, true);
+  // Устанавливаем обработчик прерывания таймера
+  irq_set_exclusive_handler(TIMER_IRQ, changeColor);
+  // Включаем прерывания
+  irq_set_enabled(TIMER_IRQ, true);
+  interrupts();
+}
+
+void loop() {
+  // Основной код остается пустым, так как обработка таймера происходит в прерывании
+}
