@@ -1,60 +1,37 @@
 #define RED 0
 #define YELLOW 1
-#define BLUE 2
-int buttonState = 0; //D3
+#define GREEN 2
+#define BUTTON_PIN 3
 
+int currentColor = RED;
 
 void setup() {
-  // put your setup code here, to run once:
   pinMode(RED, OUTPUT);
-  pinMode(YELLOW, OUTPUT); // Вывод для желтого светодиода
-  pinMode(BLUE, OUTPUT); // Вывод для синего светодиода
-  pinMode(buttonState, INPUT); // Ввод для кнопки
+  pinMode(YELLOW, OUTPUT);
+  pinMode(GREEN, OUTPUT);
+  pinMode(BUTTON_PIN, INPUT_PULLUP);
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
-  buttonState = digitalWrite(D3);
-  digitalWrite(RED, LOW);
-  digitalWrite(YELLOW, LOW);
-  digitalWrite(BLUE, LOW);
-
-  if (buttonState == HIGH) {
-    digitalWrite(RED, HIGH);
-    digitalWrite(YELLOW, LOW);
-    digitalWrite(BLUE, LOW);
-  }else {
-    digitalWrite(RED, LOW);
-    digitalWrite(YELLOW, LOW);
-    digitalWrite(BLUE, LOW);
-  }
-  digitalWrite(RED, LOW);
-  digitalWrite(YELLOW, LOW);
-  digitalWrite(BLUE, LOW);
-
+  int buttonState = digitalRead(BUTTON_PIN);
+  
   if (buttonState == LOW) {
-    digitalWrite(RED, LOW);
-    digitalWrite(YELLOW, HIGH);
-    digitalWrite(BLUE, LOW);
-  }else {
-    digitalWrite(RED, LOW);
-    digitalWrite(YELLOW, LOW);
-    digitalWrite(BLUE, LOW);
+    // Кнопка нажата
+    
+    digitalWrite(currentColor, LOW);  // Выключаем текущий цвет
+    
+    if (currentColor == RED) {
+      currentColor = YELLOW;
+    } else if (currentColor == YELLOW) {
+      currentColor = GREEN;
+    } else {
+      currentColor = RED;
+    }
+    
+    digitalWrite(currentColor, HIGH); // Включаем новый цвет
+    delay(500); // Задержка для избежания множественных смен цвета при удержании кнопки
+    while (digitalRead(BUTTON_PIN) == LOW) {
+      // Ждем, пока кнопка будет отпущена
+    }
   }
-  digitalWrite(RED, LOW);
-  digitalWrite(YELLOW, LOW);
-  digitalWrite(BLUE, LOW);
-
-  if (buttonState == HIGH) {
-    digitalWrite(RED, LOW);
-    digitalWrite(YELLOW, LOW);
-    digitalWrite(BLUE, HIGH);
-  }else {
-    digitalWrite(RED, LOW);
-    digitalWrite(YELLOW, LOW);
-    digitalWrite(BLUE, LOW);
-  }
-  digitalWrite(RED, LOW);
-  digitalWrite(YELLOW, LOW);
-  digitalWrite(BLUE, LOW);
 }
