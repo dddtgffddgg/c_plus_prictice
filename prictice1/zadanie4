@@ -1,4 +1,3 @@
-#include <Arduino.h>
 #define RED 0
 #define YELLOW 1
 #define GREEN 2
@@ -6,9 +5,25 @@
 
 int currentColor = RED;
 
-void changeColor() {
-  digitalWrite(currentColor, LOW);  // Выключаем текущий цвет
+void setup() {
+  pinMode(RED, OUTPUT);
+  pinMode(YELLOW, OUTPUT);
+  pinMode(GREEN, OUTPUT);
+  pinMode(BUTTON_PIN, INPUT_PULLUP);
 
+  // устанавливаем прерывание на пине BUTTON_PIN
+  attachInterrupt(digitalPinToInterrupt(BUTTON_PIN), changeColor, FALLING);
+}
+
+void loop() {
+  
+}
+
+void changeColor() {
+  noInterrupts(); // Отключаем прерывания временно
+
+  digitalWrite(currentColor, LOW);  // 
+    
   if (currentColor == RED) {
     currentColor = YELLOW;
   } else if (currentColor == YELLOW) {
@@ -16,20 +31,9 @@ void changeColor() {
   } else {
     currentColor = RED;
   }
+    
+  digitalWrite(currentColor, HIGH); // включаем новый цвет
+  delay(500); //
 
-  digitalWrite(currentColor, HIGH); // Включаем новый цвет
+  interrupts(); // включаем прерывания снова
 }
-
-void setup() {
-  pinMode(RED, OUTPUT);
-  pinMode(YELLOW, OUTPUT);
-  pinMode(GREEN, OUTPUT);
-
-  pinMode(BUTTON_PIN, INPUT_PULLUP);
-  attachInterrupt(digitalPinToInterrupt(BUTTON_PIN), changeColor, FALLING);
-}
-
-void loop() {
-  // Основной код остается пустым, так как обработка кнопки происходит в прерывании
-}
-
