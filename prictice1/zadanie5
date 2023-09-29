@@ -1,34 +1,43 @@
-#define RED 0
-#define YELLOW 1
-#define GREEN 2
-#define LED_SWITCH_INTERVAL 5000 // интервал для смены цвета
-
-int currentColor = RED;
-unsigned long lastColorChangeTime = 0;
+volatile int flag = 0;
+volatile int check = 1;
+struct repeating_timer timer;
 
 void setup() {
-  pinMode(RED, OUTPUT);
-  pinMode(YELLOW, OUTPUT);
-  pinMode(GREEN, OUTPUT);
+  pinMode(D0, OUTPUT);
+  pinMode(D1, OUTPUT);
+  pinMode(D2, OUTPUT);
+  add_repeating_timer_ms(5000, trafficLight, nullptr, &timer);
 }
 
 void loop() {
-  unsigned long currentTime = millis();
-
-  // роверяем прошло ли времени для смены цвета
-  if (currentTime - lastColorChangeTime >= LED_SWITCH_INTERVAL) {
-    digitalWrite(currentColor, LOW); // выключаем текущий цвет
-
-    // смена цвета
-    if (currentColor == RED) {
-      currentColor = YELLOW;
-    } else if (currentColor == YELLOW) {
-      currentColor = GREEN;
-    } else {
-      currentColor = RED;
-    }
-
-    digitalWrite(currentColor, HIGH); // включаем новый цвет
-    lastColorChangeTime = currentTime; // обновляем время последней смены цвета
-  }
 }
+
+bool trafficLight(struct repeating_timer *t) {
+  if (flag == 0) {
+    if (check == 1) {
+      digitalWrite(D0, HIGH);
+      flag = 1;
+    } else {
+      digitalWrite(D0, LOW);
+    }
+    if (check == 2) {
+      flag = 1;
+      digitalWrite(D1, HIGH);
+    } else {
+      digitalWrite(D1, LOW);
+    }
+    if (check == 3) {
+      digitalWrite(D2, HIGH);
+      flag = 1;
+      check = 0;
+    } else {
+      digitalWrite(D2, LOW);
+    }
+  }
+  if (flag == 1) {
+    check = check + 1;
+    flag = 0;
+  }
+  return true;
+}
+
