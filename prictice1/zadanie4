@@ -1,18 +1,18 @@
-#define RED 0
-#define YELLOW 1
-#define GREEN 2
-#define BUTTON_PIN 3
+#define D0 0
+#define D1 1
+#define D2 2
+#define D3 3
 
-int currentColor = RED;
+int currentColor = D0;
 
 void setup() {
-  pinMode(RED, OUTPUT);
-  pinMode(YELLOW, OUTPUT);
-  pinMode(GREEN, OUTPUT);
-  pinMode(BUTTON_PIN, INPUT_PULLUP);
+  pinMode(D0, OUTPUT);
+  pinMode(D1, OUTPUT);
+  pinMode(D2, OUTPUT);
+  pinMode(D3, INPUT_PULLUP);
 
   // устанавливаем прерывание на пине BUTTON_PIN
-  attachInterrupt(digitalPinToInterrupt(BUTTON_PIN), changeColor, FALLING);
+  attachInterrupt(D3, changeColor, FALLING);
 }
 
 void loop() {
@@ -20,20 +20,16 @@ void loop() {
 }
 
 void changeColor() {
-  noInterrupts(); // Отключаем прерывания временно
-
   digitalWrite(currentColor, LOW);  // 
     
-  if (currentColor == RED) {
-    currentColor = YELLOW;
-  } else if (currentColor == YELLOW) {
-    currentColor = GREEN;
+  if (currentColor == D0) {
+    currentColor = D1;
+  } else if (currentColor == D1) {
+    currentColor = D2;
   } else {
-    currentColor = RED;
+    currentColor = D0;
   }
     
   digitalWrite(currentColor, HIGH); // включаем новый цвет
-  delay(500); //
-
-  interrupts(); // включаем прерывания снова
+  delay(500); //ключаем прерывания снова
 }
