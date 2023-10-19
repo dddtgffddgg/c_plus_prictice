@@ -1,0 +1,32 @@
+#include <Wire.h>
+#include <TroykaMeteoSensor.h>
+#include <TroykaIMU.h>
+
+TroykaMeteoSensor meteoSensor;
+TroykaIMU imu;
+
+void setup() {
+  Serial.begin(9600);
+  Wire.begin();
+  meteoSensor.begin();
+  imu.begin();
+}
+
+void loop() {
+  meteoSensor.read();
+  imu.read();
+
+  Serial.print("Temperature (SHT31): ");
+  Serial.print(meteoSensor.getTemperatureC());
+  Serial.println(" °C");
+
+  Serial.print("Humidity (SHT31): ");
+  Serial.print(meteoSensor.getHumidity());
+  Serial.println(" %");
+
+  Serial.print("Pressure (LPS25HB): ");
+  Serial.print(imu.readPressure() / 100.0); // Давление в гектопаскалях
+  Serial.println(" hPa");
+
+  delay(5000); // Задержка 5 секунд между измерениями
+}
