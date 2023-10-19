@@ -1,0 +1,38 @@
+#include <Wire.h>  // Библиотека Wire для работы с шиной I2C
+#include <TroykaMeteoSensor.h>
+#include <TroykaIMU.h>
+
+TroykaMeteoSensor meteo;  // Объект для работы с датчиком SHT31
+TroykaIMU imu;            // Объект для работы с датчиком LPS25HB
+
+void setup() {
+  Serial.begin(9600);
+  Wire.begin();  // Инициализируем шину I2C
+
+  // Инициализация датчиков
+  meteo.begin();
+  imu.begin();
+}
+
+void loop() {
+  // Чтение данных с датчика SHT31
+  float temperature = meteo.readTemperature();
+  float humidity = meteo.readHumidity();
+
+  // Чтение данных с датчика LPS25HB
+  float pressure = imu.readPressure() / 100.0;  // Давление в гектопаскалях
+
+  // Вывод данных в последовательный порт
+  Serial.print("Температура (SHT31): ");
+  Serial.print(temperature);
+  Serial.println(" °C");
+  Serial.print("Влажность (SHT31): ");
+  Serial.print(humidity);
+  Serial.println(" %");
+
+  Serial.print("Давление (LPS25HB): ");
+  Serial.print(pressure);
+  Serial.println(" hPa");
+
+  delay(1000);  // Задержка между измерениями (1 секунда)
+}
