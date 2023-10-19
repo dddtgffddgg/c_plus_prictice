@@ -2,7 +2,7 @@ void setup() {
   // put your setup code here, to run once:
   pinMode(D0, OUTPUT);  // dlya upravleniya SHIM
   pinMode(D1, OUTPUT); // diya upravleniya ventilatorom
-znachenie chastoti sdelat
+  analogWrite(25000);
 }
 
 void loop() {
@@ -10,6 +10,5 @@ void loop() {
   int potValue = analogRead(A0);
   int angle = map(potValue, 0, 4095, 0, 255); //skvazhnost SHIM
   analogWrite(D0, angle);  // upravlenie silovim kluchom
-  // sdelat na pin D1
-  delay(15);
+  analogWrite(D1, angle);
 }
