@@ -1,37 +1,30 @@
+#include <sstream>
 #include <AmperkaFET.h>
 #include <SPI.h>
+#include <string.h>
 
-AmperkaFET pFET; // Подключение силовых ключей
-AmperkaFET nFET;
+FET mosfet(D17, 2);
 
-void setup() {
-  SPI.begin(); // Настройка шины SPI
-  SPI.setClockDivider(SPI_CLOCK_DIV8); // Установите необходимую частоту SPI
-  pinMode(SS, OUTPUT);
-
-  pFET.begin(FET_P, 3); // Замените "3" на номер GPIO, к которому подключен P-FET
-  nFET.begin(FET_N, 4); // Замените "4" на номер GPIO, к которому подключен N-FET
-
-  Serial.begin(9600); // скорость передачи данных
+void setup()
+{
+  Serial.begin();
+  mosfet.begin();
 }
 
-void loop() {
-  // чтение данных из Serial и отправка команд через SPI
-  if (Serial.available() > 0) {
-    char command = Serial.read();
-    switch (command) {
-      case '1':
-        pFET.turnOn();
-        nFET.turnOff();
-        break;
-      case '0':
-        pFET.turnOff();
-        nFET.turnOn();
-        break;
-      default:
-        pFET.turnOff();
-        nFET.turnOff();
-        break;
-    }
+void loop()
+{
+  if (Serial.available())
+  {
+    std::stringstream input;
+    uint32_t device, pin;
+    bool mode;
+
+    input << Serial.readString().c_str();
+
+    input >> device;
+    input >> pin;
+    input >> mode;
+
+    mosfet.digitalWrite(device, pin, mode);
   }
 }
