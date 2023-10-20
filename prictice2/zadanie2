@@ -12,3 +12,4 @@ void loop() {
   analogWrite(D0, angle);  // upravlenie silovim kluchom
   analogWrite(D1, angle);
 }
+https://alexgyver.ru/lessons/esp8266/
