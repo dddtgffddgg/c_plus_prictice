@@ -1,38 +1,64 @@
-#include <Wire.h>  // Библиотека Wire для работы с шиной I2C
 #include <TroykaMeteoSensor.h>
-#include <TroykaIMU.h>
+#include <Barometer.h>
 
-TroykaMeteoSensor meteo;  // Объект для работы с датчиком SHT31
-TroykaIMU imu;            // Объект для работы с датчиком LPS25HB
+TroykaMeteoSensor meteoSensor;
+Barometer barometer;
 
 void setup() {
+  // Инициализируем последовательный порт для вывода данных
   Serial.begin(9600);
-  Wire.begin();  // Инициализируем шину I2C
 
-  // Инициализация датчиков
-  meteo.begin();
-  imu.begin();
+  // Инициализируем метео-сенсор и барометр
+  meteoSensor.begin();
+  barometer.begin();
 }
 
 void loop() {
-  // Чтение данных с датчика SHT31
-  float temperature = meteo.readTemperature();
-  float humidity = meteo.readHumidity();
+  // Проверяем, доступны ли данные на последовательном порту
+  if (Serial.available()) {
+    Serial.println("Serial init OK");
+    Serial.println("Meteo Sensor and barometer init OK");
+  }
 
-  // Чтение данных с датчика LPS25HB
-  float pressure = imu.readPressure() / 100.0;  // Давление в гектопаскалях
+  // Считываем данные с датчика метео
+  int stateSensor = meteoSensor.read();
+  
+  // Выводим показания барометра
+  Serial.print("Barometer's pressure: ");
+  Serial.print(barometer.readPressureMillimetersHg());
+  Serial.println(" mmHg");
 
-  // Вывод данных в последовательный порт
-  Serial.print("Температура (SHT31): ");
-  Serial.print(temperature);
-  Serial.println(" °C");
-  Serial.print("Влажность (SHT31): ");
-  Serial.print(humidity);
-  Serial.println(" %");
+  Serial.print("Barometer's altitude: ");
+  Serial.print(barometer.readAltitude());
+  Serial.println(" meters");
 
-  Serial.print("Давление (LPS25HB): ");
-  Serial.print(pressure);
-  Serial.println(" hPa");
+  Serial.print("Barometer's temperature: ");
+  Serial.print(barometer.readTemperatureC());
+  Serial.println("°C");
 
-  delay(1000);  // Задержка между измерениями (1 секунда)
+  switch (stateSensor) {
+    case SHT_OK:
+      // Выводим показания влажности и температуры с метео-сенсора
+      Serial.println("Data sensor is OK");
+      Serial.print("Temperature = ");
+      Serial.print(meteoSensor.getTemperatureC());
+      Serial.println("°C");
+
+      Serial.print("Humidity = ");
+      Serial.print(meteoSensor.getHumidity());
+      Serial.println("%");
+      break;
+
+    // Обработка ошибок
+    case SHT_ERROR_DATA:
+      Serial.println("Data error or sensor not connected");
+      break;
+
+    case SHT_ERROR_CHECKSUM:
+      Serial.println("Checksum error");
+      break;
+  }
+
+  // Ждем 5 секунд перед следующей итерацией
+  delay(5000);
 }
