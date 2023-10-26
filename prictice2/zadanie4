@@ -5,25 +5,19 @@ TroykaMeteoSensor meteoSensor;
 Barometer barometer;
 
 void setup() {
-  // Инициализируем последовательный порт для вывода данных
   Serial.begin(9600);
-
-  // Инициализируем метео-сенсор и барометр
   meteoSensor.begin();
   barometer.begin();
 }
 
 void loop() {
-  // Проверяем, доступны ли данные на последовательном порту
   if (Serial.available()) {
     Serial.println("Serial init OK");
     Serial.println("Meteo Sensor and barometer init OK");
   }
 
-  // Считываем данные с датчика метео
   int stateSensor = meteoSensor.read();
-  
-  // Выводим показания барометра
+
   Serial.print("Barometer's pressure: ");
   Serial.print(barometer.readPressureMillimetersHg());
   Serial.println(" mmHg");
@@ -38,7 +32,6 @@ void loop() {
 
   switch (stateSensor) {
     case SHT_OK:
-      // Выводим показания влажности и температуры с метео-сенсора
       Serial.println("Data sensor is OK");
       Serial.print("Temperature = ");
       Serial.print(meteoSensor.getTemperatureC());
@@ -49,7 +42,6 @@ void loop() {
       Serial.println("%");
       break;
 
-    // Обработка ошибок
     case SHT_ERROR_DATA:
       Serial.println("Data error or sensor not connected");
       break;
@@ -58,7 +50,5 @@ void loop() {
       Serial.println("Checksum error");
       break;
   }
-
-  // Ждем 5 секунд перед следующей итерацией
   delay(5000);
 }
