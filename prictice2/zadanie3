@@ -1,7 +1,7 @@
-#include <sstream>
 #include <AmperkaFET.h>
 #include <SPI.h>
 #include <string.h>
+#include <sstream>
 
 FET mosfet(D17, 2);
 
@@ -13,17 +13,23 @@ void setup()
 
 void loop()
 {
-  if (Serial.available())
+  if (Serial.available() > 0)
   {
-    std::stringstream input;
-    uint32_t device, pin;
+    uint32_t device;
+    uint32_t pin;
     bool mode;
+
+    std::stringstream input;
 
     input << Serial.readString().c_str();
 
     input >> device;
     input >> pin;
     input >> mode;
+
+    Serial.println(device);
+    Serial.println(pin);
+    Serial.println(mode);
 
     mosfet.digitalWrite(device, pin, mode);
   }
