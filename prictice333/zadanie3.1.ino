@@ -42,8 +42,13 @@ void loop() {
 }
 
 void printWiFiData() {
-  IPAddres ip = WiFi.localIP(); //узнаем и отправляем свой айпи
+  IPAddress ip = WiFi.localIP(); //узнаем и отправляем свой айпи
   
   Serial.print("Локальный IP адрес: ");
   Serial.println(ip);
 } 
+
+void printCurrentNet() {
+  Serial.print("SSID: ");
+  Serial.println(WiFi.SSID());
+}
