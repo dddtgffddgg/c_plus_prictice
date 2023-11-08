@@ -3,21 +3,17 @@
 #include <Adafruit_SHT31.h>
 #include <Adafruit_LPS2X.h>
 
-char ssid[] = "Имя вашей сети";  
-char pass[] = "Пароль вашей сети";
+char ssid[] = "ASOIU";  
+char pass[] = "kf.asoiu.48";
 int status = WL_IDLE_STATUS; // для статуса подключения
 
-WiFiServer server(80);
+//WiFiServer server(80);
 
 Adafruit_SHT31 sht31 = Adafruit_SHT31();
 Adafruit_LPS25HB lps25hb = Adafruit_LPS25HB();
 
 void setup() {
   Serial.begin(115200);	//"92.246.214.18"
-
-  while(!Serial) {
-    ;
-  }
 
   status = WiFi.begin(ssid, pass);
   if (status != WL_CONNECTED) {
@@ -30,7 +26,9 @@ void setup() {
   
   if (!lps25hb.begin_I2C(0x44)) {
     Serial.println("Не удалось инициализировать LPS25HB");
+  }
 
+  Serial.print("Подключение к: ");
   server.begin();
   
 }
