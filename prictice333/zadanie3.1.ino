@@ -1,54 +1,52 @@
-#include <SPI.h>
 #include <WiFi.h>
-#include <ESP32Ping.h>
 
-char ssid[] = "Имя вашей сети";  
-char pass[] = "Пароль вашей сети";
-int status = WL_IDLE_STATUS; // для статуса подключения
+char ssid[] = "ASOIU";  
+char pass[] = "kaf.asoiu.48";
+int status = WL_IDLE_STATUS; 
 
-WiFiServer server(80);
+//WiFiServer server(80);
 
 void setup() {
-  Serial.begin(9600);	//"92.246.214.18"
-
-  while(!Serial) {
-    ;
-  }
+  Serial.begin(9600);	
 
   status = WiFi.begin(ssid, pass);
   if (status != WL_CONNECTED) {
     Serial.println("Не удалось подключиться к WiFi");
 
-    while (true);
   }
 
   Serial.print("Подключение к:");
   printWiFiData();
-  
-  bool succes = Ping.ping("www.google.com", 3);
-  
-  if (!succes) {
-    Serial.print("Не удалось выполнить пинг");
-    return; 
-  }
-  
-  Serial.println("Пинг выполнен")
+
 }
 
 void loop() {
   delay(10000);
   
-  printCurrentNet();
 }
 
 void printWiFiData() {
-  IPAddress ip = WiFi.localIP(); //узнаем и отправляем свой айпи
-  
-  Serial.print("Локальный IP адрес: ");
-  Serial.println(ip);
-} 
 
-void printCurrentNet() {
-  Serial.print("SSID: ");
-  Serial.println(WiFi.SSID());
-}
+  while(Serial.available())
+  {
+    IPAddress ip = WiFi.localIP(); 
+    
+    Serial.print("Локальный IP адрес: ");
+    Serial.println(ip);
+
+    Serial.print("Host name(www.google.com): ");
+    String MyHostName = Serial.readString();
+    int pingResult = WiFi.ping(MyHostName, 3);
+
+    Serial.print("Ping Result: ");
+    if (pingResult >= 0) {
+      Serial.print("Done, time = ");
+      Serial.print(pingResult);
+      Serial.println(" ms ");
+    }
+    else {
+      Serial.print("Error");
+    }
+  }
+
+} 
