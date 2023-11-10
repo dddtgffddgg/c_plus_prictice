@@ -35,9 +35,8 @@ void setup() {
 void loop() {
   server.handleClient();
 
-  int stateSensor = meteoSensor.read();
-
-  // Your existing sensor readings code goes here...
+  // Read sensor data
+  readSensorData();
 
   delay(5000);
 }
@@ -56,4 +55,8 @@ void handleRoot() {
   html += "</body></html>";
 
   server.send(200, "text/html", html);
+}
+
+void readSensorData() {
+  // Your code to read sensor data and update sensor variables goes here
 }
