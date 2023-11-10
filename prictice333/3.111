@@ -1,0 +1,56 @@
+#include <Wire.h>
+#include <TroykaMeteoSensor.h>
+#include <Barometer.h>
+#include <ESP8266WiFi.h>
+#include <ESP8266mDNS.h>
+#include <ArduinoOTA.h>
+
+// Replace with your network credentials
+const char* ssid = "your_SSID";
+const char* password = "your_PASSWORD";
+
+TroykaMeteoSensor meteoSensor;
+Barometer barometer;
+
+void setup() {
+  Serial.begin(115200);
+
+  // Connect to Wi-Fi
+  WiFi.begin(ssid, password);
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(250);
+    Serial.print(".");
+  }
+  Serial.println("WiFi connected");
+
+  // Initialize OTA
+  ArduinoOTA.begin();
+  
+  meteoSensor.begin();
+  barometer.begin();
+}
+
+void loop() {
+  ArduinoOTA.handle();
+
+  int stateSensor = meteoSensor.read();
+
+  if (stateSensor == SHT_OK) {
+    // Send climate data over Wi-Fi
+    WiFiClient client;
+    if (client.connect("script.google.com", 80)) {
+      String url = "/macros/s/your_google_script_ID/exec?";
+      url += "temperature=" + String(meteoSensor.getTemperatureC());
+      url += "&humidity=" + String(meteoSensor.getHumidity());
+      url += "&pressure=" + String(barometer.readPressureMillimetersHg());
+
+      // Make the HTTP request
+      client.println("GET " + url + " HTTP/1.1");
+      client.println("Host: script.google.com");
+      client.println("Connection: close");
+      client.println();
+    }
+  }
+
+  delay(5000);
+}
