@@ -1,62 +1,85 @@
-#include <ESP8266WiFi.h>
-#include <ESP8266WebServer.h>
+#include <WiFi.h>
+#include <WiFiClient.h>
+#include <WebServer.h>
 #include <Wire.h>
 #include <TroykaMeteoSensor.h>
 #include <Barometer.h>
+#include <LEAmDNS.h>
 
-const char *ssid = "your-ssid";
-const char *password = "your-password";
-IPAddress staticIP(192, 168, 1, 10);  // Укажите ваш статический IP-адрес
+#ifndef STASSID
+#define STASSID "your-ssid"
+#define STAPSK "your-password"
+#endif
+
+const char* ssid = STASSID;
+const char* password = STAPSK;
+
+WebServer server(80);
+
+const int led = LED_BUILTIN;
 
 TroykaMeteoSensor meteoSensor;
 Barometer barometer;
 
-ESP8266WebServer server(80);
+void handleRoot() {
+  digitalWrite(led, 1);
 
-void setup() {
+  // Read data from sensors
+  int stateSensor = meteoSensor.read();
+  float temperatureSHT = meteoSensor.getTemperatureC();
+  float humiditySHT = meteoSensor.getHumidity();
+  float pressureLPS = barometer.readPressureMillimetersHg();
+  float altitudeLPS = barometer.readAltitude();
+  float temperatureLPS = barometer.readTemperatureC();
+
+  // Prepare the response HTML
+  String html = "<html><body>";
+  html += "<h1>Sensor Readings</h1>";
+  html += "<p>Temperature (SHT31): " + String(temperatureSHT) + "°C</p>";
+  html += "<p>Humidity (SHT31): " + String(humiditySHT) + "%</p>";
+  html += "<p>Pressure (LPS25HB): " + String(pressureLPS) + " mmHg</p>";
+  html += "<p>Altitude (LPS25HB): " + String(altitudeLPS) + " meters</p>";
+  html += "<p>Temperature (LPS25HB): " + String(temperatureLPS) + "°C</p>";
+  html += "</body></html>";
+
+  // Send the HTML response
+  server.send(200, "text/html", html);
+
+  digitalWrite(led, 0);
+}
+
+void setup(void) {
+  pinMode(led, OUTPUT);
+  digitalWrite(led, 0);
   Serial.begin(115200);
-
-  // Connect to Wi-Fi with static IP
+  WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);
+  Serial.println("");
+
+  // Wait for connection
   while (WiFi.status() != WL_CONNECTED) {
-    delay(1000);
-    Serial.println("Connecting to WiFi...");
+    delay(500);
+    Serial.print(".");
   }
-  Serial.println("Connected to WiFi");
+  Serial.println("");
+  Serial.print("Connected to ");
+  Serial.println(ssid);
+  Serial.print("IP address: ");
+  Serial.println(WiFi.localIP());
 
-  meteoSensor.begin();
-  barometer.begin();
+  if (MDNS.begin("picow")) {
+    Serial.println("MDNS responder started");
+  }
 
-  // Define HTTP endpoints
-  server.on("/", HTTP_GET, handleRoot);
+  // Setup the root handler
+  server.on("/", handleRoot);
+
+  // Setup additional handlers if needed
+
   server.begin();
 }
 
-void loop() {
+void loop(void) {
   server.handleClient();
-
-  // Read sensor data
-  readSensorData();
-
   delay(5000);
-}
-
-void handleRoot() {
-  String html = "<html><body>";
-  html += "<h1>Sensor Readings</h1>";
-
-  // Append SHT31 and LPS25HB readings to the HTML response
-  html += "<p>Temperature (SHT31): " + String(meteoSensor.getTemperatureC()) + "°C</p>";
-  html += "<p>Humidity (SHT31): " + String(meteoSensor.getHumidity()) + "%</p>";
-  html += "<p>Pressure (LPS25HB): " + String(barometer.readPressureMillimetersHg()) + " mmHg</p>";
-  html += "<p>Altitude (LPS25HB): " + String(barometer.readAltitude()) + " meters</p>";
-  html += "<p>Temperature (LPS25HB): " + String(barometer.readTemperatureC()) + "°C</p>";
-
-  html += "</body></html>";
-
-  server.send(200, "text/html", html);
-}
-
-void readSensorData() {
-  // Your code to read sensor data and update sensor variables goes here
 }
