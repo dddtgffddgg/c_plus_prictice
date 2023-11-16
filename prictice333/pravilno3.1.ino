@@ -6,13 +6,8 @@
 #include <Barometer.h>
 #include <LEAmDNS.h>
 
-#ifndef STASSID
-#define STASSID "your-ssid"
-#define STAPSK "your-password"
-#endif
-
-const char* ssid = STASSID;
-const char* password = STAPSK;
+const char* ssid = "ASOIU";
+const char* password = "kaf.asoiu.48";
 
 WebServer server(80);
 
@@ -24,7 +19,6 @@ Barometer barometer;
 void handleRoot() {
   digitalWrite(led, 1);
 
-  // Read data from sensors
   int stateSensor = meteoSensor.read();
   float temperatureSHT = meteoSensor.getTemperatureC();
   float humiditySHT = meteoSensor.getHumidity();
@@ -32,7 +26,6 @@ void handleRoot() {
   float altitudeLPS = barometer.readAltitude();
   float temperatureLPS = barometer.readTemperatureC();
 
-  // Prepare the response HTML
   String html = "<html><body>";
   html += "<h1>Sensor Readings</h1>";
   html += "<p>Temperature (SHT31): " + String(temperatureSHT) + "°C</p>";
@@ -42,7 +35,6 @@ void handleRoot() {
   html += "<p>Temperature (LPS25HB): " + String(temperatureLPS) + "°C</p>";
   html += "</body></html>";
 
-  // Send the HTML response
   server.send(200, "text/html", html);
 
   digitalWrite(led, 0);
@@ -56,7 +48,6 @@ void setup(void) {
   WiFi.begin(ssid, password);
   Serial.println("");
 
-  // Wait for connection
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
     Serial.print(".");
@@ -71,10 +62,7 @@ void setup(void) {
     Serial.println("MDNS responder started");
   }
 
-  // Setup the root handler
   server.on("/", handleRoot);
-
-  // Setup additional handlers if needed
 
   server.begin();
 }
