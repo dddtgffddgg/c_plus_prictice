@@ -1,0 +1,26 @@
+void printWiFiData() {
+  IPAddress ip = WiFi.localIP(); 
+  Serial.print("Локальный IP адрес: ");
+  Serial.println(ip);
+
+  Serial.print("Host name(www.google.com): ");
+  while (!Serial.available()) {
+    delay(10);
+  }
+  String MyHostName = Serial.readString();
+
+  IPAddress remote_ip;
+  if (WiFi.hostByName(MyHostName.c_str(), remote_ip)) {
+    int pingResult = WiFi.ping(remote_ip, 3);
+    Serial.print("Ping Result: ");
+    if (pingResult >= 0) {
+      Serial.print("Done, time = ");
+      Serial.print(pingResult);
+      Serial.println(" ms ");
+    } else {
+      Serial.println("Error");
+    }
+  } else {
+    Serial.println("DNS resolution failed");
+  }
+}
