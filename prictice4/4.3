@@ -1,0 +1,53 @@
+using System.Device.Gpio;
+using System.Device.I2c;
+using System.Diagnostics;
+using Iot.Device.Adc;
+using Iot.Device.OneWire;
+using Iot.Device.RotaryEncoder;
+using Raven.Iot.Device;
+using Raven.Iot.Device.GpioExpander;
+using UnitsNet;
+
+bool flag = true;
+
+Console.CancelKeyPress += (obj, args) => {
+    args.Cancel = true;
+    flag = false;
+};
+
+//const int PinA = 0;
+//const int PinB = 1;
+//const int KeyPin = 1;
+//const int FanPin = 2;
+while (flag)
+{
+    foreach (var device in OneWireThermometerDevice.EnumerateDevices())
+    {
+        Console.WriteLine("Temperature reported by {0} is {1}", device.DeviceId, device.ReadTemperature().DegreesCelsius);
+    }
+}
+
+
+//if (DeviceHelper.GetGpioExpanderDevices() is [I2cConnectionSettings settings])
+//{
+//    using GpioExpander gpioExpander = new GpioExpander(settings);
+
+//    //using ScaledQuadratureEncoder encoder = new ScaledQuadratureEncoder(DeviceHelper.WiringPiToBcm(PinA), DeviceHelper.WiringPiToBcm(PinB), PinEventTypes.Falling, pulsesPerRotation: 20, pulseIncrement: 1.0, rangeMin: 0.0, rangeMax: 255.0);
+
+
+
+//    //encoder.Debounce=TimeSpan.FromMilliseconds(2);
+
+
+//    //encoder.ValueChanged += (obj, args) =>
+//    //{
+//    //    gpioExpander.AnalogWrite(KeyPin, (int)(args.Value));
+//    //    gpioExpander.AnalogWrite(FanPin, (int)(args.Value));
+//    //};
+//    Console.ReadKey();
+//}
+//else
+//{
+//    Console.WriteLine("Device is not connected");
+//    Console.ReadKey();
+//}
