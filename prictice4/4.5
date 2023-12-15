@@ -14,7 +14,7 @@ void receiveEvent(int sizeBytes) {
 
     Wire.readBytes(array, sizeof(EncoderData));
 
-    EncoderData* dataRec = static_cast<EncoderData>(array);
+    EncoderData* dataRec = reinterpret_cast<EncoderData>(array);
     Serial.println(dataRec->EncoderValue);
     analogWrite(pwm_pin, dataRec->EncoderValue);
 
